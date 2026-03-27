@@ -18,11 +18,6 @@ android {
         applicationId = "dev.anilbeesetti.nextplayer"
         versionCode = 53
         versionName = "0.16.0"
-
-        // Force the build to only support armv7a
-        ndk {
-            abiFilters.add("armeabi-v7a")
-        }
     }
 
     buildFeatures {
@@ -39,7 +34,11 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
-            // No signingConfig means it generates an unsigned APK
+            // This is the modern way to restrict the ABI for a specific build type
+            ndk {
+                abiFilters.add("armeabi-v7a")
+            }
+            // No signingConfig = Unsigned APK
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -68,15 +67,7 @@ android {
         }
     }
 
-    // Modern ABI split configuration
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a")
-            isUniversalApk = false
-        }
-    }
+    // REMOVED splits block to avoid conflict with abiFilters
 
     packaging {
         resources {

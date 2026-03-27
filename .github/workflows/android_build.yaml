@@ -26,7 +26,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build Project
-        # Clean build to ensure no old flags are hanging around
         run: ./gradlew clean assembleRelease
 
       - name: Run Local Tests
@@ -36,8 +35,8 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: nextplayer-armeabi-v7a-release
-          # The filename usually follows this pattern for splits
-          path: ./app/build/outputs/apk/release/app-armeabi-v7a-release-unsigned.apk
+          # Filename changes to app-release-unsigned.apk when splits are disabled
+          path: ./app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Upload build reports
         if: always()

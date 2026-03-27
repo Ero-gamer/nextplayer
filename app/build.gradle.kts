@@ -18,6 +18,12 @@ android {
         applicationId = "dev.anilbeesetti.nextplayer"
         versionCode = 53
         versionName = "0.16.0"
+
+        // Specifically filtering for armv7a at the defaultConfig level 
+        // ensures other architectures are stripped out during the build.
+        ndk {
+            abiFilters.add("armeabi-v7a")
+        }
     }
 
     buildFeatures {
@@ -34,6 +40,7 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
+            // No signingConfig here ensures it remains unsigned
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -64,13 +71,11 @@ android {
 
     splits {
         abi {
-            //noinspection WrongGradleMethod
             val isBuildingBundle = gradle.startParameter.taskNames.any { it.lowercase().contains("bundle") }
-
             isEnable = !isBuildingBundle
             reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
+            include("armeabi-v7a") // Only armv7a included
+            isUniversalApk = false // Disabled to avoid generating a massive multi-arch APK
         }
     }
 
@@ -81,9 +86,7 @@ android {
     }
 
     dependenciesInfo {
-        // Disables dependency metadata when building APKs.
         includeInApk = false
-        // Disables dependency metadata when building Android App Bundles.
         includeInBundle = false
     }
 }

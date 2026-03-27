@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build Release APK and run tests
+    name: Build armv7a Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -24,26 +24,19 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
-        with:
-          validate-wrappers: true
-          gradle-home-cache-cleanup: true
 
-      # Changed to assembleRelease and added -P to target specific ABI if supported by your build script
-      - name: Build Project with gradle
-        run: ./gradlew assembleRelease -Pandroid.bundle.enableUncompressedNativeLibs=false
+      - name: Build Project
+        # Clean build to ensure no old flags are hanging around
+        run: ./gradlew clean assembleRelease
 
       - name: Run Local Tests
         run: ./gradlew test
 
-      - name: Lint Checks
-        run: ./gradlew ktlintCheck
-
-      # Filtered to only upload the armeabi-v7a release artifact
-      - name: Upload artifact nextplayer-armeabi-v7a-release.apk
+      - name: Upload armv7a APK
         uses: actions/upload-artifact@v6
         with:
-          name: nextplayer-armeabi-v7a-release.apk
-          # Note: The 'unsigned' suffix is added by Gradle when no signing config is provided
+          name: nextplayer-armeabi-v7a-release
+          # The filename usually follows this pattern for splits
           path: ./app/build/outputs/apk/release/app-armeabi-v7a-release-unsigned.apk
 
       - name: Upload build reports

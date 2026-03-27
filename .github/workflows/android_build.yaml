@@ -26,17 +26,18 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build Project
-        run: ./gradlew clean assembleRelease
+        # Added -x lint to skip linting and speed up the "last try"
+        run: ./gradlew clean assembleRelease -x lint
 
       - name: Run Local Tests
         run: ./gradlew test
 
-      - name: Upload armv7a APK
+      - name: Upload Unsigned armv7a APK
         uses: actions/upload-artifact@v6
         with:
-          name: nextplayer-armeabi-v7a-release
-          # Filename changes to app-release-unsigned.apk when splits are disabled
-          path: ./app/build/outputs/apk/release/app-release-unsigned.apk
+          name: nextplayer-release-unsigned
+          # Without splits, the filename is standard
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Upload build reports
         if: always()

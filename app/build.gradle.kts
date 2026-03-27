@@ -12,12 +12,18 @@ android {
     namespace = "dev.anilbeesetti.nextplayer"
 
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+    
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         applicationId = "dev.anilbeesetti.nextplayer"
         versionCode = 53
         versionName = "0.16.0"
+
+        // This is the ONLY place you should define the ABI for a single-arch build
+        ndk {
+            abiFilters.add("armeabi-v7a")
+        }
     }
 
     buildFeatures {
@@ -34,11 +40,7 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
-            // This is the modern way to restrict the ABI for a specific build type
-            ndk {
-                abiFilters.add("armeabi-v7a")
-            }
-            // No signingConfig = Unsigned APK
+            // No signingConfig assigned = Unsigned Release Build
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -66,8 +68,6 @@ android {
             keyPassword = "android"
         }
     }
-
-    // REMOVED splits block to avoid conflict with abiFilters
 
     packaging {
         resources {

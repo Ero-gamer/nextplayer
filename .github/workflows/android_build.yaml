@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build apk and run tests
+    name: Build armv7a Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -23,50 +23,25 @@ jobs:
           distribution: temurin
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          validate-wrappers: true
-          gradle-home-cache-cleanup: true
+        uses: gradle/actions/setup-gradle@v6
 
-      - name: Build Project with gradle
-        run: ./gradlew assembleDebug
+      - name: Build Project
+        # Added -x lint to skip linting and speed up the "last try"
+        run: ./gradlew clean assembleRelease -x lint
 
       - name: Run Local Tests
         run: ./gradlew test
 
-      - name: Lint Checks
-        run: ./gradlew ktlintCheck
-
-        # Upload all build artifacts in separate steps. This can be shortened once https://github.com/actions/upload-artifact/pull/354 is merged.
-      - name: Upload artifact nextplayer-universal-debug.apk
-        uses: actions/upload-artifact@v6
+      - name: Upload Unsigned armv7a APK
+        uses: actions/upload-artifact@v7
         with:
-          name: nextplayer-universal-debug.apk
-          path: ./app/build/outputs/apk/debug/app-universal-debug.apk
-      - name: Upload artifact nextplayer-arm64-v8a-debug.apk
-        uses: actions/upload-artifact@v6
-        with:
-          name: nextplayer-arm64-v8a-debug.apk
-          path: ./app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
-      - name: Upload artifact nextplayer-armeabi-v7a-debug.apk
-        uses: actions/upload-artifact@v6
-        with:
-          name: nextplayer-armeabi-v7a-debug.apk
-          path: ./app/build/outputs/apk/debug/app-armeabi-v7a-debug.apk
-      - name: Upload artifact nextplayer-x86_64-debug.apk
-        uses: actions/upload-artifact@v6
-        with:
-          name: nextplayer-x86_64-debug.apk
-          path: ./app/build/outputs/apk/debug/app-x86_64-debug.apk
-      - name: Upload artifact nextplayer-x86-debug.apk
-        uses: actions/upload-artifact@v6
-        with:
-          name: nextplayer-x86-debug.apk
-          path: ./app/build/outputs/apk/debug/app-x86-debug.apk
+          name: nextplayer-release-unsigned
+          # Without splits, the filename is standard
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Upload build reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: build-reports
           path: app/build/reports

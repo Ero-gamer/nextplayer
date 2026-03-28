@@ -12,6 +12,7 @@ android {
     namespace = "dev.anilbeesetti.nextplayer"
 
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+    
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
@@ -34,6 +35,7 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
+            // No signingConfig assigned = Unsigned Release Build
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -62,18 +64,6 @@ android {
         }
     }
 
-    splits {
-        abi {
-            //noinspection WrongGradleMethod
-            val isBuildingBundle = gradle.startParameter.taskNames.any { it.lowercase().contains("bundle") }
-
-            isEnable = !isBuildingBundle
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
-        }
-    }
-
     packaging {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
@@ -81,9 +71,7 @@ android {
     }
 
     dependenciesInfo {
-        // Disables dependency metadata when building APKs.
         includeInApk = false
-        // Disables dependency metadata when building Android App Bundles.
         includeInBundle = false
     }
 }
@@ -95,7 +83,6 @@ kotlin {
 }
 
 dependencies {
-
     implementation(project(":core:common"))
     implementation(project(":core:data"))
     implementation(project(":core:media"))
@@ -109,7 +96,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
 
-    // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -120,10 +106,8 @@ dependencies {
 
     implementation(libs.google.android.material)
     implementation(libs.androidx.core.splashscreen)
-
     implementation(libs.coil.compose)
 
-    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     ksp(libs.kotlin.metadata.jvm)
@@ -131,7 +115,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.accompanist.permissions)
-
     implementation(libs.github.anilbeesetti.nextlib.mediainfo)
 
     testImplementation(libs.junit4)

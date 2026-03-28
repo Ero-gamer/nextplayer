@@ -17,13 +17,8 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         applicationId = "dev.anilbeesetti.nextplayer"
-        versionCode = 53
-        versionName = "0.16.0"
-
-        // This is the ONLY place you should define the ABI for a single-arch build
-        ndk {
-            abiFilters.add("armeabi-v7a")
-        }
+        versionCode = 54
+        versionName = "0.16.1"
     }
 
     buildFeatures {
